@@ -1,0 +1,99 @@
+---
+title: "Introduction to nonbgfa"
+format: html
+vignette: >
+  %\VignetteIndexEntry{Introduction to nonbgfa}
+  %\VignetteEngine{quarto::quarto}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## Overview
+
+**nonbgfa** identifies sequences associated with non-B DNA-forming motifs in
+genomic FASTA sequences. It wraps the GFA suite originally developed at
+NCI-Frederick / Frederick National Laboratory for Biodefense and
+Counterterrorism.
+
+Seven motif classes are supported:
+
+| Function | Motif | Structure |
+|---|---|---|
+| `find_ir()` | Inverted repeats | Cruciform DNA |
+| `find_mr()` | Mirror repeats | Triplex (H-DNA) |
+| `find_dr()` | Direct repeats | Slipped-strand DNA |
+| `find_gq()` | G-quadruplexes | Tetraplex (G4 DNA) |
+| `find_zdna()` | Z-DNA | Left-handed helix |
+| `find_str()` | Short tandem repeats | Microsatellites |
+| `find_apr()` | A-phased repeats | Bent DNA |
+
+## Installation
+
+```r
+# Install from GitHub (package not yet on CRAN)
+# install.packages("pak")
+pak::pak("NCATS-Tangerine/non-b-gfa")
+```
+
+## Quick start
+
+```{r quick-start, eval=FALSE}
+library(nonbgfa)
+
+fasta <- system.file("extdata", "gfa_test.fasta", package = "nonbgfa")
+
+# Run all motif finders at once
+results <- find_nonb(fasta)
+
+# Individual motif types
+ir  <- find_ir(fasta)
+gq  <- find_gq(fasta)
+```
+
+## Interpreting results
+
+Each finder returns a `data.frame` with the following columns:
+
+- **seq_name**: Sequence identifier from the FASTA header.
+- **start / end**: 1-based genomic coordinates.
+- **strand**: `"+"` or `"-"`.
+- **length**: Length of the repeat unit or G-run.
+- **spacer**: Spacer between repeat halves (or KV score for Z-DNA).
+- **num_repeats**: Number of times the unit is repeated.
+- **remainder**: Motif-specific (DR remainder, IR/MR min loop, GQ island count).
+- **subset**: `TRUE` if the locus qualifies as a special structural subset
+  (cruciform, triplex, slipped, or KV-scored Z-DNA).
+
+## Using GenomicRanges output
+
+```{r granges, eval=FALSE}
+# Requires Bioconductor: BiocManager::install("GenomicRanges")
+ir_gr <- find_ir(fasta, format = "GRanges")
+ir_gr
+```
+
+## Adjusting search parameters
+
+All parameters mirror the original `gfa` command-line switches and default
+to the same values used by the Non-B DB website.
+
+```{r params, eval=FALSE}
+# Require longer G-runs and tighter spacers for G-quadruplexes
+strict_gq <- find_gq(fasta, minGQrep = 4, maxGQspacer = 3)
+
+# Search only for inverted repeats with longer arms
+long_ir <- find_ir(fasta, minIRrep = 12, maxIRspacer = 50)
+```
+
+## Citation
+
+Please cite the original GFA tool:
+
+> Cer RZ, Donohue DE, Mudunuri US, Temiz NA, Loss MA, Starner NJ,
+> Halusa GN, Volfovsky N, Yi M, Luke BT, Bacolla A, Collins JR,
+> Stephens RM. (2013) Non-B DB v2.0: a database of predicted non-B
+> DNA-forming motifs and its associated tools. *Nucleic Acids Research*,
+> 41(D1):D94–D100. <https://doi.org/10.1093/nar/gks955>
