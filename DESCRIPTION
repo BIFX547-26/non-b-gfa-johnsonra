@@ -3,10 +3,12 @@ Type: Package
 Title: Find Non-B DNA Forming Motifs in Genomic Sequences
 Version: 0.1.0
 Authors@R: c(
-    person("Duncan E.", "Donohue", role = c("aut"),
+    person("Duncan E.", "Donohue", role = "aut",
            comment = "Original GFA C implementation"),
-    person("Jack R.", "Collins", role = "ctb",
+    person("Jack R.", "Collins", role = "aut",
            comment = "Original GFA C implementation"),
+    person("Randy", "Johnson", email = "johnson@hood.edu",
+           role = c("aut", "cre")),
     person("ABCS-Frederick", role = "cph"))
 Description: Identifies sequences associated with non-B DNA-forming motifs in
     FASTA-format genomic sequences. Detects seven motif classes: inverted
@@ -19,7 +21,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 NeedsCompilation: yes
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     rlang
 Suggests:

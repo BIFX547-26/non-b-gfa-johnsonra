@@ -21,6 +21,14 @@ find_gq <- function(seq,
                     maxGQspacer = 7L,
                     format      = c("data.frame", "GRanges")) {
   format <- match.arg(format)
-  # TODO: call .Call("gfa_find_gq", ...)
-  stop("find_gq() not yet implemented: C interface pending Phase 2")
+  seq <- .resolve_seq(seq)
+  results <- lapply(seq, function(s) {
+    raw <- .Call("gfa_find_gq", s,
+                 as.integer(minGQrep), as.integer(maxGQspacer),
+                 PACKAGE = "nonbgfa")
+    .rep_to_df(raw, names(s) %||% "seq1")
+  })
+  df <- do.call(rbind, results)
+  if (format == "GRanges") return(to_granges(df))
+  df
 }

@@ -36,22 +36,52 @@
   maxTriplexSpacer      = 8L,
   maxSlippedSpacer      = 0L
 )
+
+# NULL-coalescing operator used in finder functions
+`%||%` <- function(x, y) if (!is.null(x) && length(x) > 0L) x else y
 
-#' Read a FASTA file into a named character vector
+# Internal: accept either a file path or a raw DNA character vector.
+# Returns a named character vector (names = seq identifiers).
+.resolve_seq <- function(seq) {
+  if (length(seq) == 1L &&
+      grepl("\\.(fa|fasta|fna)(\\.gz)?$", seq, ignore.case = TRUE) &&
+      file.exists(seq)) {
+    read_fasta(seq)
+  } else {
+    if (is.null(names(seq))) names(seq) <- paste0("seq", seq_along(seq))
+    seq
+  }
+}
+
+
 #'
 #' @param path Path to a FASTA file (single or multi-sequence).
 #' @return A named character vector where names are sequence identifiers and
 #'   values are the DNA sequences (upper-case).
 #' @export
 read_fasta <- function(path) {
-  # TODO: implement
-  stop("read_fasta() not yet implemented")
+  lines <- readLines(path)
+  header_idx <- grep("^>", lines)
+  if (length(header_idx) == 0L)
+    stop("Not a valid FASTA file: no '>' header lines found in ", path)
+
+  starts <- header_idx
+  ends   <- c(header_idx[-1L] - 1L, length(lines))
+  names  <- sub("^>([^ \t]+).*", "\\1", lines[header_idx])
+
+  seqs <- mapply(function(s, e) {
+    paste(lines[(s + 1L):e], collapse = "")
+  }, starts, ends, SIMPLIFY = TRUE)
+
+  stats::setNames(seqs, names)
 }
 
-# Internal: convert a REP list returned from C into a data.frame.
+# Internal: convert the named list returned from C into a data.frame,
+# prepending the seq_name column.
 .rep_to_df <- function(rep_list, seq_name) {
-  # TODO: implement after C interface is in place
-  stop(".rep_to_df() not yet implemented")
+  df <- as.data.frame(rep_list, stringsAsFactors = FALSE)
+  df$subset <- as.logical(df$subset)
+  cbind(seq_name = seq_name, df, stringsAsFactors = FALSE)
 }
 
 #' Convert a nonbgfa data.frame to a GRanges object

@@ -1,5 +1,4 @@
 test_that("find_mr() errors until C interface is implemented", {
-  skip("Phase 2 C interface not yet implemented")
   result <- find_mr(example_fasta)
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), nrow(expected$MR))

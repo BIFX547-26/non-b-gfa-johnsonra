@@ -1,5 +1,4 @@
 test_that("find_ir() errors until C interface is implemented", {
-  skip("Phase 2 C interface not yet implemented")
   result <- find_ir(example_fasta)
   expect_s3_class(result, "data.frame")
   expect_named(result, c("seq_name", "start", "end", "strand",
@@ -10,7 +9,6 @@ test_that("find_ir() errors until C interface is implemented", {
 })
 
 test_that("find_ir() returns GRanges when format = 'GRanges'", {
-  skip("Phase 2 C interface not yet implemented")
   skip_if_not_installed("GenomicRanges")
   result <- find_ir(example_fasta, format = "GRanges")
   expect_s4_class(result, "GRanges")

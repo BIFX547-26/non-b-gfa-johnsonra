@@ -33,6 +33,16 @@ find_ir <- function(seq,
                     maxCruciformSpacer = 4L,
                     format            = c("data.frame", "GRanges")) {
   format <- match.arg(format)
-  # TODO: call .Call("gfa_find_ir", ...) once C interface is in place
-  stop("find_ir() not yet implemented: C interface pending Phase 2")
+  seq <- .resolve_seq(seq)
+  results <- lapply(seq, function(s) {
+    raw <- .Call("gfa_find_ir", s,
+                 as.integer(minIRrep), as.integer(maxIRspacer),
+                 as.integer(shortIRcut), as.integer(shortIRspacer),
+                 as.integer(minCruciformRep), as.integer(maxCruciformSpacer),
+                 PACKAGE = "nonbgfa")
+    .rep_to_df(raw, names(s) %||% "seq1")
+  })
+  df <- do.call(rbind, results)
+  if (format == "GRanges") return(to_granges(df))
+  df
 }

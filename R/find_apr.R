@@ -30,6 +30,15 @@ find_apr <- function(seq,
                      maxAPRlen    = 9L,
                      format       = c("data.frame", "GRanges")) {
   format <- match.arg(format)
-  # TODO: call .Call("gfa_find_apr", ...)
-  stop("find_apr() not yet implemented: C interface pending Phase 2")
+  seq <- .resolve_seq(seq)
+  results <- lapply(seq, function(s) {
+    raw <- .Call("gfa_find_apr", s,
+                 as.integer(minAPRlen), as.integer(maxAPRlen),
+                 as.integer(minATracts),
+                 PACKAGE = "nonbgfa")
+    .rep_to_df(raw, names(s) %||% "seq1")
+  })
+  df <- do.call(rbind, results)
+  if (format == "GRanges") return(to_granges(df))
+  df
 }

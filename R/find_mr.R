@@ -25,6 +25,15 @@ find_mr <- function(seq,
                     maxTriplexSpacer      = 8L,
                     format                = c("data.frame", "GRanges")) {
   format <- match.arg(format)
-  # TODO: call .Call("gfa_find_mr", ...)
-  stop("find_mr() not yet implemented: C interface pending Phase 2")
+  seq <- .resolve_seq(seq)
+  results <- lapply(seq, function(s) {
+    raw <- .Call("gfa_find_mr", s,
+                 as.integer(minMRrep), as.integer(maxMRspacer),
+                 as.integer(minTriplexYRpercent), as.integer(maxTriplexSpacer),
+                 PACKAGE = "nonbgfa")
+    .rep_to_df(raw, names(s) %||% "seq1")
+  })
+  df <- do.call(rbind, results)
+  if (format == "GRanges") return(to_granges(df))
+  df
 }

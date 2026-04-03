@@ -19,6 +19,14 @@ find_zdna <- function(seq,
                       minZlen = 10L,
                       format  = c("data.frame", "GRanges")) {
   format <- match.arg(format)
-  # TODO: call .Call("gfa_find_zdna", ...)
-  stop("find_zdna() not yet implemented: C interface pending Phase 2")
+  seq <- .resolve_seq(seq)
+  results <- lapply(seq, function(s) {
+    raw <- .Call("gfa_find_zdna", s,
+                 as.integer(minZlen), 33L,
+                 PACKAGE = "nonbgfa")
+    .rep_to_df(raw, names(s) %||% "seq1")
+  })
+  df <- do.call(rbind, results)
+  if (format == "GRanges") return(to_granges(df))
+  df
 }
