@@ -1,2 +1,1 @@
-PKG_CFLAGS = -O2
-PKG_LIBS   = -lm
+PKG_LIBS = -lm

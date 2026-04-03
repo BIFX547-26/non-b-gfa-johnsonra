@@ -1,9 +1,9 @@
 ---
 title: "Introduction to nonbgfa"
-format: html
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to nonbgfa}
-  %\VignetteEngine{quarto::quarto}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -67,7 +67,7 @@ Each finder can also be called directly:
 ```{r individual}
 ir  <- find_ir(fasta)
 gq  <- find_gq(fasta)
-str <- find_str(fasta)
+str_res <- find_str(fasta)
 
 head(ir[, c("seq_name", "start", "end", "length", "spacer", "subset")])
 ```
@@ -94,7 +94,7 @@ All parameters correspond directly to the original `gfa` CLI switches and
 default to the same values used by the Non-B DB website.
 
 ```{r params}
-# Stricter G-quadruplex search: ≥4 G-runs, spacer ≤3 bp
+# Stricter G-quadruplex search: >=4 G-runs, spacer <=3 bp
 strict_gq <- find_gq(fasta, minGQrep = 4, maxGQspacer = 3)
 nrow(strict_gq)
 
@@ -109,7 +109,7 @@ nrow(long_ir)
 |---|---|---|---|
 | IR | `minIRrep` | 6 | Min arm length (bp) |
 | IR | `maxIRspacer` | 100 | Max spacer (bp) |
-| IR | `shortIRcut` | 9 | Arms ≤ this length require tight spacer |
+| IR | `shortIRcut` | 9 | Arms <= this length require tight spacer |
 | IR | `shortIRspacer` | 4 | Spacer limit for short IRs |
 | IR | `minCruciformRep` | 6 | Min arm for cruciform flag |
 | IR | `maxCruciformSpacer` | 4 | Max spacer for cruciform flag |
@@ -160,13 +160,6 @@ Pass a multi-sequence FASTA or a named character vector directly:
 ```{r multi}
 seqs <- read_fasta(fasta)
 cat("Sequence length:", nchar(seqs), "bp\n")
-
-# Inline sequence vector
-inline <- c(
-  seq1 = "atcgatcgatcgatcgatcg",
-  seq2 = "gcgcgcgcgcgcgcgcgcgc"
-)
-find_str(inline)
 ```
 
 ## Citation

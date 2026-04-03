@@ -30,7 +30,8 @@ Suggests:
     BiocGenerics,
     quarto,
     testthat (>= 3.0.0),
-    knitr
-Config/testthat/edition: 3
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
 URL: https://github.com/NCATS-Tangerine/non-b-gfa
 BugReports: https://github.com/NCATS-Tangerine/non-b-gfa/issues

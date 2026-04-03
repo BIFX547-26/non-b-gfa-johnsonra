@@ -16,7 +16,7 @@
   # Direct Repeat
   minDRrep      = 10L,
   maxDRrep      = 300L,
-  maxDRspacer   = 100L,
+  maxDRspacer   = 10L,
   # A-Phased Repeat
   minATracts    = 3L,
   minATractSep  = 10L,
@@ -28,7 +28,7 @@
   # Short Tandem Repeat
   minSTR        = 1L,
   maxSTR        = 9L,
-  minSTRbp      = 8L,
+  minSTRbp      = 10L,
   # Subset classification thresholds
   minCruciformRep       = 6L,
   maxCruciformSpacer    = 4L,
@@ -54,10 +54,17 @@
 }
 
 
+#' Read a FASTA file
 #'
-#' @param path Path to a FASTA file (single or multi-sequence).
-#' @return A named character vector where names are sequence identifiers and
-#'   values are the DNA sequences (upper-case).
+#' Parses a FASTA file (single or multi-sequence) into a named character vector.
+#'
+#' @param path Path to a FASTA file.
+#' @return A named character vector.  Names are the first word of each `>`
+#'   header line; values are the concatenated sequence strings.
+#' @examples
+#' fa <- system.file("extdata", "gfa_test.fasta", package = "nonbgfa")
+#' seq <- read_fasta(fa)
+#' nchar(seq)
 #' @export
 read_fasta <- function(path) {
   lines <- readLines(path)
@@ -81,7 +88,11 @@ read_fasta <- function(path) {
 .rep_to_df <- function(rep_list, seq_name) {
   df <- as.data.frame(rep_list, stringsAsFactors = FALSE)
   df$subset <- as.logical(df$subset)
-  cbind(seq_name = seq_name, df, stringsAsFactors = FALSE)
+  if (nrow(df) == 0L) {
+    cbind(seq_name = character(0), df, stringsAsFactors = FALSE)
+  } else {
+    cbind(seq_name = seq_name, df, stringsAsFactors = FALSE)
+  }
 }
 
 #' Convert a nonbgfa data.frame to a GRanges object
