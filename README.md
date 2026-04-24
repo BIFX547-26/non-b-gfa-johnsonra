@@ -4,7 +4,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/johnsonra/non-b-gfa/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/johnsonra/non-b-gfa/actions/workflows/R-CMD-check.yml)
+[![R-CMD-check](https://github.com/non-b-gfa-johnsonra/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/non-b-gfa-johnsonra/actions/workflows/R-CMD-check.yml)
 <!-- badges: end -->
 
 **nonbgfa** is an R package for finding non-B DNA-forming motifs in
@@ -34,8 +34,8 @@ recombination hotspots, and elevated mutation rates in cancer.
 
 ``` r
 # Install from GitHub
-# install.packages("pak")
-pak::pak("johnsonra/non-b-gfa")
+# install.packages("remotes")
+remotes::install_github("abcsFrederick/non-b-gfa", ref = 'Rpkg')
 ```
 
 The package requires a C compiler (provided by
@@ -62,16 +62,17 @@ sapply(results, nrow)
 # Or call individual finders
 ir  <- find_ir(fasta)
 gq  <- find_gq(fasta)
-head(ir[, c("start", "end", "length", "spacer", "subset")])
+head(ir)
 ```
 
-           start  end length spacer subset
-    Test.1    16   29      6      2   TRUE
-    Test.2   108  121      6      2   TRUE
-    Test.3   542  555      6      2   TRUE
-    Test.4   813  826      6      2   TRUE
-    Test.5  2251 2267      7      3   TRUE
-    Test.6  2370 2391     10      2   TRUE
+|        | seq_name | start |  end | strand | length | spacer | num_repeats | remainder | subset |
+|:-------|:---------|------:|-----:|:-------|-------:|-------:|------------:|----------:|:-------|
+| Test.1 | seq1     |    16 |   29 | \+     |      6 |      2 |           1 |        29 | TRUE   |
+| Test.2 | seq1     |   108 |  121 | \+     |      6 |      2 |           1 |       121 | TRUE   |
+| Test.3 | seq1     |   542 |  555 | \+     |      6 |      2 |           1 |       555 | TRUE   |
+| Test.4 | seq1     |   813 |  826 | \+     |      6 |      2 |           1 |       826 | TRUE   |
+| Test.5 | seq1     |  2251 | 2267 | \+     |      7 |      3 |           1 |      2267 | TRUE   |
+| Test.6 | seq1     |  2370 | 2391 | \+     |     10 |      2 |           1 |      2391 | TRUE   |
 
 ## Output columns
 
@@ -92,6 +93,31 @@ Every finder returns a `data.frame` with these columns:
 Pass `format = "GRanges"` to any finder for a
 [`GenomicRanges::GRanges`](https://bioconductor.org/packages/GenomicRanges)
 object (requires the **GenomicRanges** Bioconductor package).
+
+``` r
+find_ir(fasta, format = 'GRanges') |>
+    head()
+```
+
+    GRanges object with 6 ranges and 5 metadata columns:
+          seqnames    ranges strand |    length    spacer num_repeats remainder
+             <Rle> <IRanges>  <Rle> | <integer> <integer>   <integer> <integer>
+      [1]     seq1     16-29      + |         6         2           1        29
+      [2]     seq1   108-121      + |         6         2           1       121
+      [3]     seq1   542-555      + |         6         2           1       555
+      [4]     seq1   813-826      + |         6         2           1       826
+      [5]     seq1 2251-2267      + |         7         3           1      2267
+      [6]     seq1 2370-2391      + |        10         2           1      2391
+             subset
+          <logical>
+      [1]      TRUE
+      [2]      TRUE
+      [3]      TRUE
+      [4]      TRUE
+      [5]      TRUE
+      [6]      TRUE
+      -------
+      seqinfo: 1 sequence from an unspecified genome; no seqlengths
 
 ## Parameter defaults
 
@@ -121,19 +147,18 @@ parameter list.
 
 ## Multi-sequence input
 
-Pass a multi-sequence FASTA file or a named character vector:
+Functions will accept either a single named character vector or a
+multi-sequence FASTA file:
 
 ``` r
-seqs <- read_fasta(fasta)
+# input from fasta file
+fasta_ir <- read_fasta(fasta) |>
+    find_ir()
 
 # Inline sequences
-inline <- c(my_gene = "atcgatcgatcgatcgatcg")
-find_ir(inline)
+inline <- c(my_gene = "atcgatcgatcgatcgatcg") |>
+    find_ir()
 ```
-
-              seq_name start end strand length spacer num_repeats remainder subset
-    my_gene.1     seq1     1  18      +      9      0           1        18   TRUE
-    my_gene.2     seq1     3  20      +      9      0           1        20   TRUE
 
 ## Citation
 

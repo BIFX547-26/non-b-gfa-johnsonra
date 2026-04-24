@@ -8,15 +8,14 @@ Authors@R: c(
     person("Jack R.", "Collins", role = "aut",
            comment = "Original GFA C implementation"),
     person("Randy", "Johnson", email = "johnson@hood.edu",
-           role = c("aut", "cre")),
-    person("ABCS-Frederick", role = "cph"))
+           role = c("aut", "cre")))
 Description: Identifies sequences associated with non-B DNA-forming motifs in
     FASTA-format genomic sequences. Detects seven motif classes: inverted
     repeats (cruciform DNA), mirror repeats (triplex DNA), direct repeats
     (slipped DNA), G-quadruplexes, Z-DNA, short tandem repeats (STR), and
     A-phased repeats (bent DNA). Based on the GFA suite developed at
-    NCI-Frederick / Frederick National Laboratory for Biodefense and
-    Counterterrorism. See <https://nonb-abcc.ncifcrf.gov/apps/site/default>.
+    NCI-Frederick / Frederick National Laboratory for Cancer Research.
+    See <https://nonb-abcc.ncifcrf.gov/apps/site/default>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 NeedsCompilation: yes
@@ -33,5 +32,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-URL: https://github.com/NCATS-Tangerine/non-b-gfa
-BugReports: https://github.com/NCATS-Tangerine/non-b-gfa/issues
+URL: https://github.com/abcsFrederick/non-b-gfa
+BugReports: https://github.com/abcsFrederick/non-b-gfa/issues

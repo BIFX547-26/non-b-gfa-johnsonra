@@ -5,8 +5,14 @@ format: gfm
 # nonbgfa
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/johnsonra/non-b-gfa/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/johnsonra/non-b-gfa/actions/workflows/R-CMD-check.yml)
+[![R-CMD-check](https://github.com/non-b-gfa-johnsonra/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/non-b-gfa-johnsonra/actions/workflows/R-CMD-check.yml)
 <!-- badges: end -->
+
+```{r setup}
+#| include: false
+library(knitr)
+library(GenomicRanges)
+```
 
 **nonbgfa** is an R package for finding non-B DNA-forming motifs in genomic
 sequences.  It wraps the [GFA suite](https://nonb-abcc.ncifcrf.gov/apps/site/default)
@@ -34,8 +40,8 @@ hotspots, and elevated mutation rates in cancer.
 
 ```r
 # Install from GitHub
-# install.packages("pak")
-pak::pak("johnsonra/non-b-gfa")
+# install.packages("remotes")
+remotes::install_github("abcsFrederick/non-b-gfa", ref = 'Rpkg')
 ```
 
 The package requires a C compiler (provided by
@@ -44,7 +50,7 @@ command-line tools on macOS, or `build-essential` on Linux).
 
 ## Quick start
 
-```{r quick-start}
+```{r quick-start-all}
 library(nonbgfa)
 
 # Use the bundled example sequence
@@ -53,12 +59,22 @@ fasta <- system.file("extdata", "gfa_test.fasta", package = "nonbgfa")
 # Run all seven finders at once
 results <- find_nonb(fasta)
 sapply(results, nrow)
+```
 
+```r
 # Or call individual finders
 ir  <- find_ir(fasta)
 gq  <- find_gq(fasta)
-head(ir[, c("start", "end", "length", "spacer", "subset")])
+head(ir)
 ```
+
+```{r quick-start-singles}
+#| echo: false
+ir  <- find_ir(fasta)
+head(ir) |>
+    kable()
+```
+
 
 ## Output columns
 
@@ -79,6 +95,11 @@ Every finder returns a `data.frame` with these columns:
 Pass `format = "GRanges"` to any finder for a
 [`GenomicRanges::GRanges`](https://bioconductor.org/packages/GenomicRanges) object
 (requires the **GenomicRanges** Bioconductor package).
+
+```{r}
+find_ir(fasta, format = 'GRanges') |>
+    head()
+```
 
 ## Parameter defaults
 
@@ -106,14 +127,16 @@ See `?find_nonb` and individual function help pages for the full parameter list.
 
 ## Multi-sequence input
 
-Pass a multi-sequence FASTA file or a named character vector:
+Functions will accept either a single named character vector or a multi-sequence FASTA file:
 
-```{r multi-sequence}
-seqs <- read_fasta(fasta)
+```r
+# input from fasta file
+fasta_ir <- read_fasta(fasta) |>
+    find_ir()
 
 # Inline sequences
-inline <- c(my_gene = "atcgatcgatcgatcgatcg")
-find_ir(inline)
+inline <- c(my_gene = "atcgatcgatcgatcgatcg") |>
+    find_ir()
 ```
 
 ## Citation
